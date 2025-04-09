@@ -124,12 +124,3 @@ MIT License
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [GitHub Actions](https://docs.github.com/en/actions)
 ```
-
----
-
-Let me know if you'd like to:
-- Add badges (build passing, license, Docker pull count, etc.)
-- Add instructions for deploying on Render / Railway / EC2
-- Include the Android app once it's ready
-
-Would you like me to auto-generate a `.gitkeep`, `.gitignore`, `Dockerfile`, or `requirements.txt` too?

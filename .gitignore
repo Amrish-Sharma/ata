@@ -1,4 +1,6 @@
 # gitignore uploads folder
 # Ignore all files in the uploads directory
-/uploads/*
+uploads/*
 /app/__pycache__/*
+
+!uploads/.gitkeep

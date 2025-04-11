@@ -9,6 +9,9 @@ from app.utils import transcribe_audio
 
 app = FastAPI()
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# Mount the static directory
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 templates = Jinja2Templates(directory="templates")
 
 UPLOAD_FOLDER = "uploads"
@@ -21,6 +24,7 @@ async def upload_form(request: Request):
 
 @app.post("/upload", response_class=HTMLResponse)
 async def upload_audio(request: Request, file: UploadFile = File(...)):
+    
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
 
     async with aiofiles.open(file_path, 'wb') as out_file:

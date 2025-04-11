@@ -3,65 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>AI Audio Transcriber</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #fdfbfb, #ebedee);
-            padding: 40px;
-            color: #333;
-        }
-        h1 {
-            color: #2c3e50;
-        }
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .transcript {
-            background: #f0f4f8;
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 6px solid #3498db;
-            white-space: pre-wrap;
-            border-radius: 8px;
-        }
-        input[type="file"] {
-            margin-top: 15px;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            margin-top: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>🎙️ AI Audio Transcriber</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
             <label>Select an audio file to transcribe:</label><br>
             <input type="file" name="file" accept="audio/*" required><br>
             <button type="submit">Upload & Transcribe</button>
         </form>
 
         {% if transcript %}
-            <div class="transcript">
-                <h2>📄 Transcript for {{ filename }}</h2>
-                {% for line in transcript.split('. ') %}
-                    <p>{{ line.strip() }}.</p>
-                {% endfor %}
-            </div>
+        <div class="transcript">
+            <h2>📄 Transcript for {{ filename }}</h2>
+            {% for line in transcript.split('. ') %}
+            <p>{{ line.strip() }}.</p>
+            {% endfor %}
+        </div>
         {% endif %}
     </div>
 </body>

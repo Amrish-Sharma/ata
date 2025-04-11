@@ -1,0 +1,111 @@
+/* Base styles */
+:root {
+    --primary-color: #3498db;
+    --text-color: #333;
+    --bg-color: #fff;
+    --container-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    margin: 0;
+    padding: 2rem;
+    min-height: 100vh;
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg-color);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--container-shadow);
+}
+
+h1 {
+    margin-top: 0;
+    color: var(--text-color);
+    font-size: 2rem;
+    text-align: center;
+}
+
+/* Form styles */
+form {
+    margin: 2rem 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 1rem 0;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Transcript styles */
+.transcript {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    margin-top: 2rem;
+}
+
+.transcript h2 {
+    margin-top: 0;
+    color: var(--text-color);
+    font-size: 1.5rem;
+}
+
+.transcript p {
+    margin: 0;
+    padding: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.progress-container {
+    margin: 15px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+}
+
+#uploadStatus {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+}
+

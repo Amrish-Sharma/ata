@@ -64,11 +64,12 @@ button:hover {
 
 /* Transcript styles */
 .transcript {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
-    margin-top: 2rem;
+    margin: 1em 0;
+    line-height: 1.5;
+}
+
+.transcript p {
+    margin-bottom: 0.5em;
 }
 
 .transcript h2 {
@@ -77,35 +78,56 @@ button:hover {
     font-size: 1.5rem;
 }
 
-.transcript p {
-    margin: 0;
-    padding: 0.25rem 0;
-    line-height: 1.5;
-}
-
 .progress-container {
-    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
 }
 
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    overflow: hidden;
+.progress-label {
+    min-width: 100px;
+    font-weight: 500;
+    color: var(--text-color);
+    flex-shrink: 0; /* Prevent label from shrinking */
 }
 
 .progress {
-    width: 0%;
-    height: 100%;
-    background-color: #3498db;
-    transition: width 0.3s ease;
+    flex: 1;
+    background-color: #f0f0f0;
+    padding: 3px;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
 }
 
-#uploadStatus {
+
+.progress-bar {
+    display: block;
+    height: 22px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+    transition: width 500ms ease-in-out;
+    color: white;
     text-align: center;
-    margin-top: 5px;
-    font-size: 14px;
-    color: #666;
+    line-height: 22px;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    min-width: 40px; /* Minimum width for the progress bar */
+}
+
+/* Ensure text is visible even when progress bar is small */
+.progress-bar span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 1;
+    width: 100%; /* Full width for text container */
+    padding: 0 5px; /* Add some padding */
+    box-sizing: border-box;
+}
+.hidden {
+    display: none;
 }
 

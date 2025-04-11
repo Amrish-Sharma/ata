@@ -7,6 +7,26 @@ A Python + FastAPI web app that transcribes audio recordings using OpenAI Whispe
 ## 🚀 Features
 
 - ✅ Upload audio recordings (MP3, WAV, etc.)
+# 🧠 AI Audio Transcriber 🎙️
+
+A Python + FastAPI web app that transcribes audio recordings using OpenAI Whisper. Supports multilingual transcription (including English and Hindi) and provides a beautiful web interface with real-time progress tracking.
+
+---
+
+## 🚀 Features
+
+- ✅ Upload audio recordings (MP3, WAV, etc.)
+- ✅ Real-time upload progress tracking
+- ✅ Live transcription status updates
+- ✅ Transcribes audio using [Whisper](https://github.com/openai/whisper)
+- ✅ Supports English, Hindi & other languages
+- ✅ Clean, responsive UI with multi-line output
+- ✅ Dockerized for easy deployment
+- ✅ GitHub Actions CI to auto-publish Docker image
+
+---
+
+[Rest of the existing README content remains unchanged...]
 - ✅ Transcribes audio using [Whisper](https://github.com/openai/whisper)
 - ✅ Supports English, Hindi & other languages
 - ✅ Clean, responsive UI with multi-line output
@@ -35,8 +55,8 @@ A Python + FastAPI web app that transcribes audio recordings using OpenAI Whispe
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/audio-transcriber-app.git
-cd audio-transcriber-app
+git clone https://github.com/Amrish-Sharma/ata.git
+cd ata
 ```
 
 ### 2. Install dependencies
@@ -77,7 +97,7 @@ This project includes a GitHub Action that automatically:
 Image will be available at:
 
 ```
-ghcr.io/<your-username>/audio-transcriber-app:latest
+ghcr.io/Amrish-Sharma/ata:latest
 ```
 
 ---
@@ -95,8 +115,14 @@ An Android app is in development to let users record or select audio and get tra
 ├── app/
 │   ├── main.py         # FastAPI entrypoint
 │   └── utils.py        # Whisper transcription logic
+├── static/             # Static assets
+│   ├── css/
+│   │   ├── style.css   # Main stylesheet
+│   └── js/
+│       └── main.js     # Frontend logic & AJAX handlers
 ├── templates/
-│   └── index.html      # UI frontend
+│   |── index.html      # UI frontend
+|   |__ result.html     # result interface
 ├── uploads/            # Uploaded audio (gitignored)
 ├── Dockerfile
 ├── .gitignore

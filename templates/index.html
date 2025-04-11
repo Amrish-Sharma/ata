@@ -1,28 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>AI Audio Transcriber</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcriber</title>
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>🎙️ AI Audio Transcriber</h1>
-        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
-            <label>Select an audio file to transcribe:</label><br>
-            <input type="file" name="file" accept="audio/*" required><br>
-            <button type="submit">Upload & Transcribe</button>
-        </form>
+        <h1>Audio Transcriber App</h1>
+        
+        <section class="upload-section">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" name="file" accept="audio/*" required>
+                <button type="submit">Upload and Transcribe</button>
+            </form>
 
-        {% if transcript %}
-        <div class="transcript">
-            <h2>📄 Transcript for {{ filename }}</h2>
-            {% for line in transcript.split('. ') %}
-            <p>{{ line.strip() }}.</p>
-            {% endfor %}
-        </div>
-        {% endif %}
+            <div class="progress-container">
+                <span class="progress-label">Upload:</span>
+                <div id="uploadProgress" class="progress hidden">
+                    <div id="uploadProgressBar" class="progress-bar" style="width: 0%">
+                        <span id="uploadProgressText">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <span class="progress-label">Transcribe:</span>
+                <div id="transcribeProgress" class="progress hidden">
+                    <div id="transcribeProgressBar" class="progress-bar" style="width: 0%">
+                        <span id="transcribeProgressText">Processing...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="result-section">
+            <div id="result">
+                {% if transcript %}
+                    {% include "result.html" %}
+                {% endif %}
+            </div>
+        </section>
     </div>
+
+    <script src="/static/js/main.js"></script>
 </body>
 </html>

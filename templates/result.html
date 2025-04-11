@@ -1,0 +1,8 @@
+<h3>Transcription for {{ filename }}</h3>
+<div class="transcript">
+    {% for sentence in transcript.split('.') %}
+        {% if sentence.strip() %}
+            <p>{{ sentence.strip() }}.</p>
+        {% endif %}
+    {% endfor %}
+</div>

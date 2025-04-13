@@ -26,7 +26,6 @@ A Python + FastAPI web app that transcribes audio recordings using OpenAI Whispe
 
 ---
 
-[Rest of the existing README content remains unchanged...]
 - ✅ Transcribes audio using [Whisper](https://github.com/openai/whisper)
 - ✅ Supports English, Hindi & other languages
 - ✅ Clean, responsive UI with multi-line output

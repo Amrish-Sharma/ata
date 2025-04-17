@@ -6,4 +6,3 @@ python-multipart
 openai-whisper
 typing
 pytubefix
-re

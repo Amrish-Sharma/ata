@@ -16,8 +16,7 @@ A Python + FastAPI web app that transcribes audio recordings using OpenAI Whispe
 ## 🚀 Features
 
 - ✅ Upload audio recordings (MP3, WAV, etc.)
-- ✅ Real-time upload progress tracking
-- ✅ Live transcription status updates
+- ✅ Youtube video transcription
 - ✅ Transcribes audio using [Whisper](https://github.com/openai/whisper)
 - ✅ Supports English, Hindi & other languages
 - ✅ Clean, responsive UI with multi-line output

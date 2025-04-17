@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, Request, Form
-from fastapi.responses import HTMLResponse,JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pytubefix import YouTube
@@ -8,21 +8,18 @@ from app.utils import transcribe_audio
 import re
 import os
 import aiofiles
+
 YOUTUBE_REGEX = re.compile(
     r'(https?://)?(www\.)?(youtube\.com|youtu\.be)/.+'
 )
 
-
-
 app = FastAPI()
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-# Mount the static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
 UPLOAD_FOLDER = "uploads"
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Store transcription progress
@@ -51,9 +48,10 @@ async def upload_audio(request: Request, file: UploadFile = File(...)):
             "status": status
         }
 
+    # Start transcription
     transcript = transcribe_audio(file_path, progress_callback)
     
-    # Split the transcript into sentences
+    # Format transcript by splitting into sentences and removing extra spaces
     formatted_transcript = '. '.join(
         sent.strip() 
         for sent in transcript.split('.') 
@@ -89,19 +87,17 @@ async def transcribe_url(request: Request, youtube_url: str = Form(...)):
 
         audio_filename = f"{yt.video_id}.mp4"
         audio_path = os.path.join(UPLOAD_FOLDER, audio_filename)
-        #check if path exists
-        if os.path.exists(audio_path):
-            print(f"File {audio_path} already exists")
-        else:
-            print(f"File {audio_path} does not exist")
-        stream.download(output_path=UPLOAD_FOLDER,filename=audio_filename)
+
+        if not os.path.exists(audio_path):
+            stream.download(output_path=UPLOAD_FOLDER, filename=audio_filename)
 
         result = transcribe_audio(audio_path)
         os.remove(audio_path)
 
-        return templates.TemplateResponse("index.html", {
+        return templates.TemplateResponse("result.html", {
             "request": request,
-            "transcript": result
+            "transcript": result,
+            "filename": audio_filename
         })
 
     except Exception as e:
@@ -110,7 +106,6 @@ async def transcribe_url(request: Request, youtube_url: str = Form(...)):
             "transcript": f"⚠️ Error: {str(e)}"
         })
 
-    
 @app.get("/transcribe-progress")
 async def get_transcribe_progress(request: Request):
     # Return progress for the most recent transcription

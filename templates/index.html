@@ -1,58 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Audio Transcriber</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .dropzone {
+            border: 2px dashed #888;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+        .dropzone.dragover {
+            background-color: #e0e0e0;
+        }
+        #urlInput {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Audio Transcriber App</h1>
-        
-        <!-- Audio Upload Section -->
-        <section class="upload-section">
-            <form id="uploadForm" enctype="multipart/form-data">
-                <input type="file" name="file" accept="audio/*" required>
-                <button type="submit">Upload and Transcribe</button>
-            </form>
+<div class="container">
+    <h1>Audio Transcriber App</h1>
 
-            <div class="progress-container">
-                <span class="progress-label">Upload:</span>
-                <div id="uploadProgress" class="progress hidden">
-                    <div id="uploadProgressBar" class="progress-bar" style="width: 0%">
-                        <span id="uploadProgressText">0%</span>
-                    </div>
-                </div>
-            </div>
+    <form id="uploadForm">
+        <div class="dropzone" id="dropzone">
+            <p>Drop an audio file here or click to browse</p>
+            <input type="file" id="fileInput" accept="audio/*" style="display:none;">
+        </div>
 
-            <div class="progress-container">
-                <span class="progress-label">Transcribe:</span>
-                <div id="transcribeProgress" class="progress hidden">
-                    <div id="transcribeProgressBar" class="progress-bar" style="width: 0%">
-                        <span id="transcribeProgressText">Processing...</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <input type="text" id="urlInput" placeholder="Or paste a YouTube URL here...">
 
-        <!-- YouTube URL Input Section -->
-        <section class="youtube-section">
-            <h2>Transcribe from YouTube URL</h2>
-            <form action="/transcribe-url" method="post">
-                <input type="text" name="youtube_url" placeholder="Paste YouTube video link here..." required style="width: 100%; padding: 10px; margin-bottom: 10px;">
-                <button type="submit">Transcribe YouTube Video</button>
-            </form>
-        </section>
+        <button type="submit">Transcribe</button>
+    </form>
 
-        <!-- Transcription Result Section -->
-        <section class="result-section">
-            <div id="result">
-                {% if transcript %}
-                    {% include "result.html" %}
-                {% endif %}
-            </div>
-        </section>
-    </div>
-
-    <script src="/static/js/main.js"></script>
+    <section class="result-section">
+        <div id="result">
+            {% if transcript %}
+                {% include "result.html" %}
+            {% endif %}
+        </div>
+    </section>
+</div>
+<script src="/static/js/main.js"></script>
 </body>
 </html>

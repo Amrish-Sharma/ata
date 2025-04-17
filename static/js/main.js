@@ -1,62 +1,66 @@
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('uploadForm');
-    
-    const uploadProgress = document.getElementById('uploadProgress');
-    const uploadProgressBar = document.getElementById('uploadProgressBar');
-    const uploadProgressText = document.getElementById('uploadProgressText');
-    const transcribeProgress = document.getElementById('transcribeProgress');
-    const transcribeProgressBar = document.getElementById('transcribeProgressBar');
-    const transcribeProgressText = document.getElementById('transcribeProgressText');
+    const fileInput = document.getElementById('fileInput');
+    const dropzone = document.getElementById('dropzone');
+    const urlInput = document.getElementById('urlInput');
     const resultDiv = document.getElementById('result');
 
+    // Dropzone functionality
+    dropzone.addEventListener("click", () => fileInput.click());
+    dropzone.addEventListener("dragover", e => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+    });
+    dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+    dropzone.addEventListener("drop", e => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        fileInput.files = e.dataTransfer.files;
+    });
 
+    // Unified handler for both file and URL submission
     uploadForm.onsubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        
-        // Show progress bars
-        uploadProgress.classList.remove('hidden');
-        transcribeProgress.classList.remove('hidden');
-        
+
+        const file = fileInput.files[0];
+        const youtubeURL = urlInput.value.trim();
+
+        // Clear any previous result (but not the form)
+        resultDiv.innerHTML = '';
+
         try {
-            const xhr = new XMLHttpRequest();
-            
-            // Track upload progress
-            xhr.upload.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percentComplete = Math.round((event.loaded / event.total) * 100);
-                    uploadProgressBar.style.width = percentComplete + '%';
-                    uploadProgressText.textContent = percentComplete + '%';
-                }
-            };
+            if (file) {
+                // If file is selected, send to server
+                const formData = new FormData();
+                formData.append("file", file);
 
-            // Create a promise to handle the XHR response
-            const response = await new Promise((resolve, reject) => {
-                xhr.onload = () => resolve(xhr.response);
-                xhr.onerror = () => reject(xhr.statusText);
-                xhr.open('POST', '/upload');
-                xhr.send(formData);
-            });
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
 
-            // Start polling for transcription progress
-            const pollProgress = async () => {
-                const progressResponse = await fetch('/transcribe-progress');
-                const progress = await progressResponse.json();
-                
-                transcribeProgressBar.style.width = progress.percentage + '%';
-                transcribeProgressText.textContent = 
-                    `${progress.percentage}% - ${progress.status}`;
+                const resultHTML = await response.text();
+                resultDiv.innerHTML = resultHTML; // Only show the result in the result section
+            } else if (youtubeURL) {
+                // If YouTube URL is provided, send to server
+                const formData = new URLSearchParams();
+                formData.append("youtube_url", youtubeURL);
 
-                if (progress.percentage < 100) {
-                    setTimeout(pollProgress, 1000);
-                }
-            };
+                const response = await fetch("/transcribe-url", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
 
-            pollProgress();
-            
-            resultDiv.innerHTML = response;
+                const resultHTML = await response.text();
+                resultDiv.innerHTML = resultHTML; // Only show the result in the result section
+            } else {
+                alert("Please upload a file or enter a YouTube URL.");
+            }
         } catch (error) {
-            console.error('Error:', error);
+            console.error("Error:", error);
             resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
         }
     };

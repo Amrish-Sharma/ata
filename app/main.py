@@ -2,11 +2,17 @@ from fastapi import FastAPI, File, UploadFile, Request, Form
 from fastapi.responses import HTMLResponse,JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import aiofiles
-import os
+from pytubefix import YouTube
 from typing import Dict
-
 from app.utils import transcribe_audio
+import re
+import os
+import aiofiles
+YOUTUBE_REGEX = re.compile(
+    r'(https?://)?(www\.)?(youtube\.com|youtu\.be)/.+'
+)
+
+
 
 app = FastAPI()
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -62,6 +68,48 @@ async def upload_audio(request: Request, file: UploadFile = File(...)):
             "filename": file.filename
         }
     )
+
+@app.post("/transcribe-url", response_class=HTMLResponse)
+async def transcribe_url(request: Request, youtube_url: str = Form(...)):
+    if not YOUTUBE_REGEX.match(youtube_url):
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "transcript": "❌ Invalid YouTube URL format."
+        })
+
+    try:
+        yt = YouTube(youtube_url)
+        stream = yt.streams.filter(only_audio=True).first()
+
+        if not stream:
+            return templates.TemplateResponse("index.html", {
+                "request": request,
+                "transcript": "❌ No audio stream found."
+            })
+
+        audio_filename = f"{yt.video_id}.mp4"
+        audio_path = os.path.join(UPLOAD_FOLDER, audio_filename)
+        #check if path exists
+        if os.path.exists(audio_path):
+            print(f"File {audio_path} already exists")
+        else:
+            print(f"File {audio_path} does not exist")
+        stream.download(output_path=UPLOAD_FOLDER,filename=audio_filename)
+
+        result = transcribe_audio(audio_path)
+        os.remove(audio_path)
+
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "transcript": result
+        })
+
+    except Exception as e:
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "transcript": f"⚠️ Error: {str(e)}"
+        })
+
     
 @app.get("/transcribe-progress")
 async def get_transcribe_progress(request: Request):

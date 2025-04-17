@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const transcribeProgressText = document.getElementById('transcribeProgressText');
     const resultDiv = document.getElementById('result');
 
+
     uploadForm.onsubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);

@@ -8,6 +8,7 @@
     <div class="container">
         <h1>Audio Transcriber App</h1>
         
+        <!-- Audio Upload Section -->
         <section class="upload-section">
             <form id="uploadForm" enctype="multipart/form-data">
                 <input type="file" name="file" accept="audio/*" required>
@@ -33,6 +34,16 @@
             </div>
         </section>
 
+        <!-- YouTube URL Input Section -->
+        <section class="youtube-section">
+            <h2>Transcribe from YouTube URL</h2>
+            <form action="/transcribe-url" method="post">
+                <input type="text" name="youtube_url" placeholder="Paste YouTube video link here..." required style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                <button type="submit">Transcribe YouTube Video</button>
+            </form>
+        </section>
+
+        <!-- Transcription Result Section -->
         <section class="result-section">
             <div id="result">
                 {% if transcript %}

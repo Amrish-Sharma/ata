@@ -2,5 +2,7 @@
 # Ignore all files in the uploads directory
 uploads/*
 /app/__pycache__/*
+logs/*
 
 !uploads/.gitkeep
+!logs/.gitkeep

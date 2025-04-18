@@ -3,11 +3,24 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pytubefix import YouTube
-from typing import Dict
 from app.utils import transcribe_audio
-import re
-import os
-import aiofiles
+from datetime import datetime
+import logging,aiofiles,os,re
+
+# Configure logging
+log_filename = f"logs/app_{datetime.now().strftime('%Y%m%d')}.log"
+os.makedirs("logs", exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_filename),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 YOUTUBE_REGEX = re.compile(
     r'(https?://)?(www\.)?(youtube\.com|youtu\.be)/.+'
@@ -22,54 +35,51 @@ templates = Jinja2Templates(directory="templates")
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Store transcription progress
-transcription_progress: Dict[str, dict] = {}
-
 @app.get("/", response_class=HTMLResponse)
 async def upload_form(request: Request):
+    logger.info(f"Access to upload form from {request.client.host}")
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/upload")
 async def upload_audio(request: Request, file: UploadFile = File(...)):
+    logger.info(f"File upload started: {file.filename}")
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-    
-    transcription_progress[file.filename] = {
-        "percentage": 0,
-        "status": "Starting transcription..."
-    }
+    try:
+        async with aiofiles.open(file_path, 'wb') as out_file:
+            content = await file.read()
+            await out_file.write(content)
 
-    async with aiofiles.open(file_path, 'wb') as out_file:
-        content = await file.read()
-        await out_file.write(content)
+        # Start transcription
+        logger.info(f"Starting transcription for {file.filename}")
+        transcript = transcribe_audio(file_path)
+        logger.info(f"Transcription completed for {file.filename}")
 
-    def progress_callback(percentage: int, status: str):
-        transcription_progress[file.filename] = {
-            "percentage": percentage,
-            "status": status
-        }
+        
+        # Format transcript by splitting into sentences and removing extra spaces
+        formatted_transcript = '. '.join(
+            sent.strip() 
+            for sent in transcript.split('.') 
+            if sent.strip()
+        )
 
-    # Start transcription
-    transcript = transcribe_audio(file_path, progress_callback)
-    
-    # Format transcript by splitting into sentences and removing extra spaces
-    formatted_transcript = '. '.join(
-        sent.strip() 
-        for sent in transcript.split('.') 
-        if sent.strip()
-    )
-
-    return templates.TemplateResponse(
-        "result.html",
-        {
-            "request": request,
-            "transcript": formatted_transcript,
-            "filename": file.filename
-        }
-    )
+        return templates.TemplateResponse(
+            "result.html",
+            {
+                "request": request,
+                "transcript": formatted_transcript,
+                "filename": file.filename
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error processing file {file.filename}: {str(e)}")
+        raise
 
 @app.post("/transcribe-url", response_class=HTMLResponse)
 async def transcribe_url(request: Request, youtube_url: str = Form(...)):
+    logger.info(f"YouTube URL transcription request: {youtube_url}")
+    
     if not YOUTUBE_REGEX.match(youtube_url):
+        logger.warning(f"Invalid YouTube URL format: {youtube_url}")
         return templates.TemplateResponse("index.html", {
             "request": request,
             "transcript": "❌ Invalid YouTube URL format."
@@ -80,6 +90,7 @@ async def transcribe_url(request: Request, youtube_url: str = Form(...)):
         stream = yt.streams.filter(only_audio=True).first()
 
         if not stream:
+            logger.warning(f"No audio stream found for URL: {youtube_url}")
             return templates.TemplateResponse("index.html", {
                 "request": request,
                 "transcript": "❌ No audio stream found."
@@ -89,10 +100,15 @@ async def transcribe_url(request: Request, youtube_url: str = Form(...)):
         audio_path = os.path.join(UPLOAD_FOLDER, audio_filename)
 
         if not os.path.exists(audio_path):
+            logger.info(f"Downloading audio from YouTube: {yt.title}")
             stream.download(output_path=UPLOAD_FOLDER, filename=audio_filename)
 
+        logger.info(f"Starting transcription for YouTube video: {yt.title}")
         result = transcribe_audio(audio_path)
+        logger.info(f"Transcription completed for YouTube video: {yt.title}")
         os.remove(audio_path)
+        logger.info(f"Cleaned up temporary file: {audio_path}")
+
 
         return templates.TemplateResponse("result.html", {
             "request": request,
@@ -101,15 +117,8 @@ async def transcribe_url(request: Request, youtube_url: str = Form(...)):
         })
 
     except Exception as e:
+        logger.error(f"Error processing YouTube URL {youtube_url}: {str(e)}")
         return templates.TemplateResponse("index.html", {
             "request": request,
             "transcript": f"⚠️ Error: {str(e)}"
         })
-
-@app.get("/transcribe-progress")
-async def get_transcribe_progress(request: Request):
-    # Return progress for the most recent transcription
-    if transcription_progress:
-        latest_file = list(transcription_progress.keys())[-1]
-        return JSONResponse(content=transcription_progress[latest_file])
-    return JSONResponse(content={"percentage": 0, "status": "No active transcription"})
